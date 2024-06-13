@@ -6,9 +6,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
 contract DegenToken is ERC20, Ownable, ERC20Burnable {
-
-    constructor(address initialOwner) ERC20("Degen", "DGN") Ownable(initialOwner) {
-        _mint(initialOwner, 1000 * 10 ** decimals()); // Initial mint for the owner
+    string public Item;
+    constructor() ERC20("Degen", "DGN") {
+        _mint(msg.sender, 100);
+        Item = "The store has the following redeemable items: 1. Cycle 2. Bike 3. Car ";
     }
 
     function mint(address to, uint256 amount) public onlyOwner {
@@ -22,25 +23,20 @@ contract DegenToken is ERC20, Ownable, ERC20Burnable {
 
     function buyItem(uint itemId) external {
         require(itemId >= 1 && itemId <= 5, "Invalid item ID");
-
-        uint price;
-        string memory itemName;
-
         if (itemId == 1 || itemId == 2 || itemId == 3) {
-            price = 1; 
-            itemName = "Cycle";
+            require(balanceOf(msg.sender) >= 1, "Insufficient balance");
+            _burn(msg.sender, 1);
+             emit ItemRedeemed("Cycle");
         } else if (itemId == 4) {
-            price = 2;  
-            itemName = "Bike";
+            require(balanceOf(msg.sender) >= 3, "Insufficient balance");
+            _burn(msg.sender, 3);
+            emit ItemRedeemed("Bike");
         } else if (itemId == 5) {
-            price = 5;
-            itemName = "Car";
+            require(balanceOf(msg.sender) >= 5, "Insufficient balance");
+            _burn(msg.sender, 5);
+            emit ItemRedeemed("Car");
         }
 
-        require(balanceOf(msg.sender) >= price, "Insufficient balance");
-
-        _burn(msg.sender, price);
-        emit ItemPurchased(msg.sender, itemId, itemName, price);
     }
 
     function bonus(uint amount) external {
@@ -51,21 +47,8 @@ contract DegenToken is ERC20, Ownable, ERC20Burnable {
 
         _mint(msg.sender, totalAmount);
     }
-
-    function getItemName(uint itemId) public pure returns (string memory) {
-        if (itemId == 1 || itemId == 2 || itemId == 3) {
-            return "Cycle";
-        } else if (itemId == 4) {
-            return "Bike";
-        } else if (itemId == 5) {
-            return "Car";
-        } else {
-            return "Unknown";
-        }
-    }
-
-    event ItemPurchased(address indexed player, uint indexed itemId, string itemName, uint price);
-
+    event ItemRedeemed(string message);
+    
     function getBalance() public view returns (uint256) {
         return balanceOf(msg.sender);
     }
