@@ -5,9 +5,9 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
-contract DegenToken is ERC20, Ownable, ERC20Burnable {
-    string public Item;
-    constructor() ERC20("Degen", "DGN") {
+    contract DegenToken is ERC20, Ownable, ERC20Burnable {
+        string public Item;
+    constructor(address initialOwner) Ownable(initialOwner) ERC20("Degen", "DGN") {
         _mint(msg.sender, 100);
         Item = "The store has the following redeemable items: 1. Cycle 2. Bike 3. Car ";
     }
